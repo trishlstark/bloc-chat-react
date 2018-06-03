@@ -17,9 +17,10 @@ export class MessageList extends Component {
 }
 
 componentDidMount(){
-  this.messagesRef.on('child_added', snapshot => {
+  this.messagesRef.orderByChild("roomId").on('child_added', snapshot => {
     const message = snapshot.val();
     message.key = snapshot.key;
+    console.log(message);
     this.setState({ messages:this.state.messages.concat(message ) });
   });
 }
@@ -27,22 +28,19 @@ componentDidMount(){
 handleChange(e){
   e.preventDefault();
   this.setState({
-    username: "user",
-    content: e.target.value,
-    sentAt: this.props.firebase.database.ServerValue.TIMESTAMP,
-    roomId: this.props.activeRoom
+    content: e.target.value
   });
 }
 
 createMessage(e){
   e.preventDefault();
   this.messagesRef.push({
-    username: this.state.username,
+    username: this.props.user,
     content: this.state.content,
-    sentAt: this.state.sentAt,
-    roomId: this.state.roomId
+    sentAt: this.props.firebase.database.ServerValue.TIMESTAMP,
+    roomId: this.props.activeRoom.key
   });
-  this.setState({username:"", content:"", sentAt:"", roomId:""});
+  this.setState({content:""});
 }
 
 render(){
@@ -54,18 +52,18 @@ render(){
     </form>
   );
 
-  const messageList = (
-    this.state.messages.map((message) => {
-      <li key={message.key}>
-      {message.content}
-      </li>
-    })
-  );
+
 
   return(
     <div>
       <div>{messageBlock}</div>
-      <ul>{messageList}</ul>
+      <ul>
+      {this.state.messages.map((message) => (
+        <li key={message.key}>
+        message : {message.content}
+        </li>
+      ))}
+      </ul>
     </div>
   );
 }
