@@ -30,6 +30,7 @@ handleChange(e){
   e.preventDefault();
   this.setState({
     content: e.target.value,
+    roomId: this.props.activeRoom
   });
 }
 
@@ -39,7 +40,7 @@ createMessage(e){
     username: this.props.user,
     content: this.state.content,
     sentAt: this.props.firebase.database.ServerValue.TIMESTAMP,
-    roomId: this.state.activeRoom.key
+    roomId: this.state.roomId
   });
   this.setState({content:""});
 }
@@ -58,7 +59,7 @@ render(){
   const messageList = (
       this.state.messages.map((message) => {
         if (message.roomId === activeRoom) {
-          return <li key={message.key}>{message.content}</li>
+          return <li key={message.key}>{message.username}: {message.content}</li>
         }
         return null;
       })
