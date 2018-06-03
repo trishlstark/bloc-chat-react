@@ -1,3 +1,4 @@
+
 import React, { Component } from 'react';
 
 export class MessageList extends Component {
@@ -28,7 +29,7 @@ componentDidMount(){
 handleChange(e){
   e.preventDefault();
   this.setState({
-    content: e.target.value
+    content: e.target.value,
   });
 }
 
@@ -38,12 +39,14 @@ createMessage(e){
     username: this.props.user,
     content: this.state.content,
     sentAt: this.props.firebase.database.ServerValue.TIMESTAMP,
-    roomId: this.props.activeRoom.key
+    roomId: this.state.activeRoom.key
   });
   this.setState({content:""});
 }
 
 render(){
+
+  const activeRoom = this.props.activeRoom
 
   const messageBlock =(
     <form onSubmit={this.createMessage}>
@@ -52,18 +55,20 @@ render(){
     </form>
   );
 
+  const messageList = (
+      this.state.messages.map((message) => {
+        if (message.roomId === activeRoom) {
+          return <li key={message.key}>{message.content}</li>
+        }
+        return null;
+      })
+    );
 
 
   return(
     <div>
       <div>{messageBlock}</div>
-      <ul>
-      {this.state.messages.map((message) => (
-        <li key={message.key}>
-        message : {message.content}
-        </li>
-      ))}
-      </ul>
+      <ul>{messageList}</ul>
     </div>
   );
 }
